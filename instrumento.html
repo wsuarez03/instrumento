@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificación de Instrumento</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 2rem; }
+    header, footer { text-align: center; margin: 1.5rem 0; }
+    .card {
+      background: #fff; padding: 1.5rem; border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 600px; margin: auto;
+    }
+    .error { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header><h1>Instrumento Metrológico</h1><p>Consulta de certificado y estado</p></header>
+  <div id="info" class="card">Cargando información...</div>
+  <footer><p>VALSER S.A.S. &copy; 2025</p></footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const codigoBuscado = params.get("id");
+
+    fetch("certificados.json")
+      .then(res => res.json())
+      .then(data => {
+        const row = data.find(item => item["CÓDIGO"]?.trim() === codigoBuscado);
+        const div = document.getElementById("info");
+        if (row) {
+          div.innerHTML = `
+            <p><strong>Código:</strong> ${row["CÓDIGO"]}</p>
+            <p><strong>Equipo:</strong> ${row["EQUIPO"]}</p>
+            <p><strong>Marca:</strong> ${row["MARCA"]}</p>
+            <p><strong>Serial:</strong> ${row["SERIAL"]}</p>
+            <p><strong>Ubicación:</strong> ${row["UBICACIÓN"]}</p>
+            <p><strong>Certificado:</strong> ${row["CERTIFICADO"]}</p>
+            <p><strong>Vigencia:</strong> ${row["VIGENCIA"]}</p>
+            <p><strong>Estado:</strong> ${row["ESTADO"]}</p>
+          `;
+        } else {
+          div.innerHTML = `<p class="error">Instrumento no encontrado para el código: <strong>${codigoBuscado}</strong></p>`;
+        }
+      })
+      .catch(err => {
+        document.getElementById("info").innerHTML = "<p class='error'>Error al cargar los datos del instrumento.</p>";
+      });
+  </script>
+</body>
+</html>
